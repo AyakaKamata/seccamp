@@ -3,7 +3,8 @@
     0x2a    // [0x2a]
     0x00    // [0x00, 0x2a]
     mstore  // []
-    0x20    // [0x20]
+    // returndatacopy
+    msize   // [0x20]
     0x00    // [0x00, 0x20]
     return  // []
     ////////// YOUR CODE END //////////

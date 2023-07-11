@@ -1,5 +1,16 @@
 #define macro MAIN() = takes (0) returns (0) {
     ////////// YOUR CODE GOES HERE //////////
+    0x02 //[0x02,data(0)]
+    0x00 //[0]
+    calldataload //[data(0)]
 
+    // swap1 //[data(0),0x02]
+    mod //[data(0)//0x02=a]
+    iszero //[a==0]
+    0x00 //[0x00,a==0]
+    mstore//[]
+    msize //[0x20]
+    0x00 //[0,0x20]
+    return //[]
     ////////// YOUR CODE END //////////
 }
