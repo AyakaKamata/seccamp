@@ -35,6 +35,7 @@ contract ChallengeTest is Test {
 ////////// YOUR CODE GOES HERE //////////
 contract Attack {
     Vault c;
+
     mapping(address=>uint256) public balanceOf;
     constructor(address vaultaddress) {
 
