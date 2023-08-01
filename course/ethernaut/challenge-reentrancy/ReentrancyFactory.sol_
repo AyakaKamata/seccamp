@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.0;
 
-import "../ethernaut-lib_0-6-12/Level.sol";
+import "../ethernaut-lib/Level.sol";
 import "./Reentrancy.sol";
 
 contract ReentrancyFactory is Level {
