@@ -24,7 +24,7 @@ contract BadProxy {
     }
 
     function upgradeTo(address newImplAddr) public {
-        require(owner == msg.sender);
+        require(owner == msg.sender,"not owner");
         implAddr = newImplAddr;
     }
 
